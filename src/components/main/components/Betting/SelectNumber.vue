@@ -2,19 +2,39 @@
     <ul class="select-number">
         <li v-for="(x,item) in parseInt(star)" :key="item">
             <div class="select-button">
-                <button :ref='`numBut${item}`' @click="clickNumber('0',item)">0</button>
-                <button :ref='`numBut${item}`' @click="clickNumber('1',item)">1</button>
-                <button :ref='`numBut${item}`' @click="clickNumber('2',item)">2</button>
-                <button :ref='`numBut${item}`' @click="clickNumber('3',item)">3</button>
-                <button :ref='`numBut${item}`' @click="clickNumber('4',item)">4</button>
-                <button :ref='`numBut${item}`' @click="clickNumber('5',item)">5</button>
-                <button :ref='`numBut${item}`' @click="clickNumber('6',item)">6</button>
-                <button :ref='`numBut${item}`' @click="clickNumber('7',item)">7</button>
-                <button :ref='`numBut${item}`' @click="clickNumber('8',item)">8</button>
-                <button :ref='`numBut${item}`' @click="clickNumber('9',item)">9</button>
+                <button :class="{isActive:(number[item]&&number[item].indexOf('0') >= 0)}"
+                        @click="clickNumber('0',item)">0
+                </button>
+                <button :class="{isActive:(number[item]&&number[item].indexOf('1') >= 0)}"
+                        @click="clickNumber('1',item)">1
+                </button>
+                <button :class="{isActive:(number[item]&&number[item].indexOf('2') >= 0)}"
+                        @click="clickNumber('2',item)">2
+                </button>
+                <button :class="{isActive:(number[item]&&number[item].indexOf('3') >= 0)}"
+                        @click="clickNumber('3',item)">3
+                </button>
+                <button :class="{isActive:(number[item]&&number[item].indexOf('4') >= 0)}"
+                        @click="clickNumber('4',item)">4
+                </button>
+                <button :class="{isActive:(number[item]&&number[item].indexOf('5') >= 0)}"
+                        @click="clickNumber('5',item)">5
+                </button>
+                <button :class="{isActive:(number[item]&&number[item].indexOf('6') >= 0)}"
+                        @click="clickNumber('6',item)">6
+                </button>
+                <button :class="{isActive:(number[item]&&number[item].indexOf('7') >= 0)}"
+                        @click="clickNumber('7',item)">7
+                </button>
+                <button :class="{isActive:(number[item]&&number[item].indexOf('8') >= 0)}"
+                        @click="clickNumber('8',item)">8
+                </button>
+                <button :class="{isActive:(number[item]&&number[item].indexOf('9') >= 0)}"
+                        @click="clickNumber('9',item)">9
+                </button>
                 <button @click="clickAll(item)">全</button>
                 <button @click="reset(item)">重置</button>
-                <span v-if="!innerWidth && highOptions">{{starArray[x]}}</span>
+                <span v-if="!innerWidth && highOptions">{{starArray[x-1]}}</span>
             </div>
             <div class="select-show">
                 <p>[ {{number[item]}} ]</p>
@@ -30,51 +50,21 @@
   export default {
     name: "SelectNumber",
     data: () => ({
-      starArray: ['十', '百', '千', '万', '十万', '百万'],
-      number: []
+      starArray: ['个', '十', '百', '千', '万'],
     }),
-    computed: mapState(['highOptions', 'star']),
+    computed: mapState(['highOptions', 'star', 'number']),
     methods: {
       clickNumber(num, item) {
-        let _target = this.$refs[`numBut${item}`][parseInt(num)];
-        _target.classList.contains('isActive') ? _target.classList.remove('isActive') : _target.classList.add('isActive');
-        if (this.number[item] && this.number[item].indexOf(num) >= 0) {
-          let index = this.number[item].indexOf(num);
-          let array = (this.number[item]).split('');
-          array.splice(index, 1);
-          this.number[item] = array.join('')
-        } else {
-          if (this.number[item]) {
-            let array = (this.number[item]).split('');
-            array[array.length] = num;
-            this.number[item] = array.sort((a, b) => a - b).join('')
-          } else {
-            this.number[item] = num
-          }
-        }
-        this.$store.commit('SET_NUMBER', this.number);
+        this.$store.commit('SET_NUMBER', {num, item});
+        this.$forceUpdate();
       },
       clickAll(item) {
-        if (this.number[item]) {
-          console.log(this.number[item].length);
-          if (this.number[item].length === 10) {
-            this.number[item] = null;
-            this.$refs[`numBut${item}`].forEach(x => x.classList.remove('isActive'))
-          }
-          if (this.number[item] && this.number[item].length < 10) {
-            this.number[item] = '0123456789';
-            this.$refs[`numBut${item}`].forEach(x => x.classList.add('isActive'))
-          }
-        } else {
-          this.number[item] = '0123456789';
-          this.$refs[`numBut${item}`].forEach(x => x.classList.add('isActive'))
-        }
-        this.$store.commit('SET_NUMBER', this.number);
+        this.$store.commit('SET_NUMBER_ALL', item);
+        this.$forceUpdate()
       },
       reset(item) {
-        this.number[item] = null;
-        this.$refs[`numBut${item}`].forEach(x => x.classList.remove('isActive'));
-        this.$store.commit('SET_NUMBER', this.number);
+        this.$store.commit('SET_RESET', item);
+        this.$forceUpdate()
       }
     },
     props: ['innerWidth'],

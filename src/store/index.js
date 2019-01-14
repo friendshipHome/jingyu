@@ -35,8 +35,41 @@ const store = new Vuex.Store({
     SET_PLURAL(state, data) {
       state.plural = data
     },
-    SET_NUMBER(state, data) {
-      state.number = data
+    SET_NUMBER(state, {num, item}) {
+      if (state.number[item] && state.number[item].indexOf(num) >= 0) {
+        let index = state.number[item].indexOf(num);
+        let array = (state.number[item]).split('');
+        array.splice(index, 1);
+        state.number[item] = array.join('')
+      } else {
+        if (state.number[item]) {
+          let array = (state.number[item]).split('');
+          array[array.length] = num;
+          state.number[item] = array.sort((a, b) => a - b).join('')
+        } else {
+          state.number[item] = num
+        }
+      }
+    },
+    /**
+     * @return {boolean}
+     */
+    SET_NUMBER_ALL(state, item) {
+      if (state.number[item]) {
+        if (state.number[item].length < 10) {
+          state.number[item] = '0123456789';
+          return false
+        }
+        if (state.number[item].length === 10) {
+          state.number[item] = null;
+          return false
+        }
+      } else {
+        state.number[item] = '0123456789';
+      }
+    },
+    SET_RESET(state, item) {
+      state.number[item] = null
     },
     SET_IDENTITY(state, data) {
       state.identity = data

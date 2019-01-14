@@ -16,7 +16,11 @@
     methods: {
       clickStar(x) {
         this.$store.commit('SET_STAR', x);
-        this.$store.commit('SET_RESET', x - 1)
+        let data = ['1', '2', '3', '4', '5'];
+        for (x; x < data.length; x++) {
+          this.$store.commit('SET_RESET', x);
+        }
+        this.$forceUpdate();
       }
     }
   }
